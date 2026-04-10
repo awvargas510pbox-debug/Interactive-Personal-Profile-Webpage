@@ -5,44 +5,47 @@
 <title>Interactive Profile</title>
 
 <style>
-body {
+body 
+{
   font-family: Arial;
   background: orange;
 }
 
-/* HEADER */
-.header {
+.header 
+{
   background: black;
   color: white;
   padding: 20px;
 }
 
-/* SECTION */
-.section {
+.section 
+{
   border: 2px solid gray;
   margin: 20px;
   padding: 20px;
 }
 
-/* PROFILE IMAGE */
-img {
+img 
+{
   width: 120px;
   height: 120px;
   border-radius: 50%;
   cursor: pointer;
 }
 
-/* LIST ITEMS */
-li {
+li 
+{
   padding: 5px;
   cursor: pointer;
 }
 
-li:hover {
+li:hover 
+{
   background: lightgray;
 }
 
-.selected {
+.selected 
+{
   background: lightgreen;
 }
 </style>
@@ -56,7 +59,6 @@ li:hover {
 
 <div class="section">
 
-<!-- PROFILE -->
 <img id="profilePic" src="https://via.placeholder.com/120">
 <input type="file" id="fileInput" hidden>
 
@@ -68,7 +70,6 @@ li:hover {
 
 </div>
 
-<!-- SKILLS -->
 <div class="section">
 <h3>Skills</h3>
 
@@ -82,7 +83,6 @@ li:hover {
 <button onclick="deleteItems('skills')">Delete Skill</button>
 </div>
 
-<!-- HOBBIES -->
 <div class="section">
 <h3>Hobbies</h3>
 
@@ -96,16 +96,16 @@ li:hover {
 <button onclick="deleteItems('hobbies')">Delete Hobby</button>
 </div>
 
-<!-- RESET -->
 <div class="section">
 <button onclick="resetAll()">Reset</button>
 </div>
 
 <script>
 
-// LOAD DATA
-window.onload = function() {
-  if (localStorage.getItem("data")) {
+window.onload = function() 
+{
+  if (localStorage.getItem("data")) 
+  {
     let data = JSON.parse(localStorage.getItem("data"));
 
     document.getElementById("name").innerText = data.name;
@@ -117,8 +117,8 @@ window.onload = function() {
   }
 };
 
-// SAVE DATA
-function saveData() {
+function saveData() 
+{
   let data = {
     name: document.getElementById("name").innerText,
     bio: document.getElementById("bio").innerText,
@@ -130,28 +130,31 @@ function saveData() {
   localStorage.setItem("data", JSON.stringify(data));
 }
 
-// GET LIST ITEMS
-function getList(id) {
+function getList(id) 
+{
   return [...document.getElementById(id).children].map(li => li.innerText);
 }
 
 // LOAD LIST
-function loadList(id, items) {
+function loadList(id, items) 
+{
   let ul = document.getElementById(id);
   ul.innerHTML = "";
 
-  items.forEach(text => {
+  items.forEach(text => 
+  {
     let li = createItem(text);
     ul.appendChild(li);
   });
 }
 
-// CREATE ITEM
-function createItem(text) {
+function createItem(text) 
+{
   let li = document.createElement("li");
   li.innerText = text;
 
-  li.onclick = function() {
+  li.onclick = function() 
+  {
     li.classList.toggle("selected");
     console.log("Item selected:", text);
   };
@@ -159,8 +162,8 @@ function createItem(text) {
   return li;
 }
 
-// EDIT TEXT
-function editText(id) {
+function editText(id) 
+{
   let el = document.getElementById(id);
 
   let input = document.createElement("input");
@@ -170,11 +173,13 @@ function editText(id) {
   input.focus();
 
   input.onblur = save;
-  input.onkeypress = function(e) {
+  input.onkeypress = function(e) 
+  {
     if (e.key === "Enter") save();
   };
 
-  function save() {
+  function save() 
+  {
     let newEl = document.createElement(el.tagName);
     newEl.id = id;
     newEl.innerText = input.value;
@@ -186,13 +191,14 @@ function editText(id) {
   }
 }
 
-// ADD ITEM
-function addItem(id) {
+function addItem(id) 
+{
   let input = document.createElement("input");
   document.body.appendChild(input);
   input.focus();
 
-  input.onkeypress = function(e) {
+  input.onkeypress = function(e) 
+  {
     if (e.key === "Enter") {
       let li = createItem(input.value);
       document.getElementById(id).appendChild(li);
@@ -205,8 +211,8 @@ function addItem(id) {
   };
 }
 
-// DELETE ITEM
-function deleteItems(id) {
+function deleteItems(id) 
+{
   let items = document.querySelectorAll("#" + id + " .selected");
 
   items.forEach(item => item.remove());
@@ -215,16 +221,18 @@ function deleteItems(id) {
   console.log("Items deleted");
 }
 
-// IMAGE UPLOAD
-document.getElementById("profilePic").onclick = function() {
+document.getElementById("profilePic").onclick = function() 
+{
   document.getElementById("fileInput").click();
 };
 
-document.getElementById("fileInput").onchange = function(e) {
+document.getElementById("fileInput").onchange = function(e) 
+{
   let file = e.target.files[0];
   let reader = new FileReader();
 
-  reader.onload = function() {
+  reader.onload = function() 
+  {
     document.getElementById("profilePic").src = reader.result;
     saveData();
 
@@ -234,8 +242,8 @@ document.getElementById("fileInput").onchange = function(e) {
   reader.readAsDataURL(file);
 };
 
-// RESET
-function resetAll() {
+function resetAll() 
+{
   localStorage.clear();
   location.reload();
 
