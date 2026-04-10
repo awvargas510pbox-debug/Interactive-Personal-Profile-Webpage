@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Interactive Profile</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: orange;
+}
+
+/* HEADER */
+.header {
+  background: black;
+  color: white;
+  padding: 20px;
+}
+
+/* SECTION */
+.section {
+  border: 2px solid gray;
+  margin: 20px;
+  padding: 20px;
+}
+
+/* PROFILE IMAGE */
+img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* LIST ITEMS */
+li {
+  padding: 5px;
+  cursor: pointer;
+}
+
+li:hover {
+  background: lightgray;
+}
+
+.selected {
+  background: lightgreen;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h2>My Profile</h2>
+</div>
+
+<div class="section">
+
+<!-- PROFILE -->
+<img id="profilePic" src="https://via.placeholder.com/120">
+<input type="file" id="fileInput" hidden>
+
+<h2 id="name">Your Name</h2>
+<button onclick="editText('name')">Edit Name</button>
+
+<p id="bio">Your bio here...</p>
+<button onclick="editText('bio')">Edit Bio</button>
+
+</div>
+
+<!-- SKILLS -->
+<div class="section">
+<h3>Skills</h3>
+
+<ul id="skills">
+  <li>HTML</li>
+  <li>CSS</li>
+  <li>JavaScript</li>
+</ul>
+
+<button onclick="addItem('skills')">Add Skill</button>
+<button onclick="deleteItems('skills')">Delete Skill</button>
+</div>
+
+<!-- HOBBIES -->
+<div class="section">
+<h3>Hobbies</h3>
+
+<ul id="hobbies">
+  <li>Gaming</li>
+  <li>Reading</li>
+  <li>Music</li>
+</ul>
+
+<button onclick="addItem('hobbies')">Add Hobby</button>
+<button onclick="deleteItems('hobbies')">Delete Hobby</button>
+</div>
+
+<!-- RESET -->
+<div class="section">
+<button onclick="resetAll()">Reset</button>
+</div>
+
+<script>
+
+// LOAD DATA
+window.onload = function() {
+  if (localStorage.getItem("data")) {
+    let data = JSON.parse(localStorage.getItem("data"));
+
+    document.getElementById("name").innerText = data.name;
+    document.getElementById("bio").innerText = data.bio;
+    document.getElementById("profilePic").src = data.img;
+
+    loadList("skills", data.skills);
+    loadList("hobbies", data.hobbies);
+  }
+};
+
+// SAVE DATA
+function saveData() {
+  let data = {
+    name: document.getElementById("name").innerText,
+    bio: document.getElementById("bio").innerText,
+    img: document.getElementById("profilePic").src,
+    skills: getList("skills"),
+    hobbies: getList("hobbies")
+  };
+
+  localStorage.setItem("data", JSON.stringify(data));
+}
+
+// GET LIST ITEMS
+function getList(id) {
+  return [...document.getElementById(id).children].map(li => li.innerText);
+}
+
+// LOAD LIST
+function loadList(id, items) {
+  let ul = document.getElementById(id);
+  ul.innerHTML = "";
+
+  items.forEach(text => {
+    let li = createItem(text);
+    ul.appendChild(li);
+  });
+}
+
+// CREATE ITEM
+function createItem(text) {
+  let li = document.createElement("li");
+  li.innerText = text;
+
+  li.onclick = function() {
+    li.classList.toggle("selected");
+    console.log("Item selected:", text);
+  };
+
+  return li;
+}
+
+// EDIT TEXT
+function editText(id) {
+  let el = document.getElementById(id);
+
+  let input = document.createElement("input");
+  input.value = el.innerText;
+
+  el.replaceWith(input);
+  input.focus();
+
+  input.onblur = save;
+  input.onkeypress = function(e) {
+    if (e.key === "Enter") save();
+  };
+
+  function save() {
+    let newEl = document.createElement(el.tagName);
+    newEl.id = id;
+    newEl.innerText = input.value;
+
+    input.replaceWith(newEl);
+    saveData();
+
+    console.log(id + " edited");
+  }
+}
+
+// ADD ITEM
+function addItem(id) {
+  let input = document.createElement("input");
+  document.body.appendChild(input);
+  input.focus();
+
+  input.onkeypress = function(e) {
+    if (e.key === "Enter") {
+      let li = createItem(input.value);
+      document.getElementById(id).appendChild(li);
+
+      input.remove();
+      saveData();
+
+      console.log("Item added:", input.value);
+    }
+  };
+}
+
+// DELETE ITEM
+function deleteItems(id) {
+  let items = document.querySelectorAll("#" + id + " .selected");
+
+  items.forEach(item => item.remove());
+
+  saveData();
+  console.log("Items deleted");
+}
+
+// IMAGE UPLOAD
+document.getElementById("profilePic").onclick = function() {
+  document.getElementById("fileInput").click();
+};
+
+document.getElementById("fileInput").onchange = function(e) {
+  let file = e.target.files[0];
+  let reader = new FileReader();
+
+  reader.onload = function() {
+    document.getElementById("profilePic").src = reader.result;
+    saveData();
+
+    console.log("Profile picture updated");
+  };
+
+  reader.readAsDataURL(file);
+};
+
+// RESET
+function resetAll() {
+  localStorage.clear();
+  location.reload();
+
+  console.log("Reset performed");
+}
+
+</script>
+
+</body>
+</html>
